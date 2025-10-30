@@ -1,0 +1,36 @@
+name: Build Next.js App
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18" # Consider downgrading from 22 if compatibility issues arise
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+
+      - name: Install dependencies
+        working-directory: ./headapps/nextjs-starter
+        run: pnpm install
+
+      - name: Build project
+        working-directory: ./headapps/nextjs-starter
+        run: pnpm run build
