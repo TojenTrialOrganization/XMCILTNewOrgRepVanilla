@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18" # Consider downgrading from 22 if compatibility issues arise
+          node-version: "22" # Consider downgrading from 22 if compatibility issues arise
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
