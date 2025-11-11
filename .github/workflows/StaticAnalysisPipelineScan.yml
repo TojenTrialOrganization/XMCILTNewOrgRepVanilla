@@ -41,23 +41,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: Package source code for Veracode
         run: |
           mkdir veracode-package
           cp -r headapps/nextjs-starter/* veracode-package/
           zip -r veracode-package.zip veracode-package
 
-       # run the pipeline scan action
-      - name: pipeline-scan action step
-        id: pipeline-scan
-        uses: veracode/Veracode-pipeline-scan-action@v1.0.12
-        with:
-          vid: ${{ secrets.VERACODE_API_ID }}
-          vkey: ${{ secrets.VERACODE_API_KEY }}
-          file: "veracode-package.zip" 
+
