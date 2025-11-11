@@ -1,13 +1,10 @@
-name: Veracode Static Analysis Pipeline Scan - Custom
+name: Build and Package for Veracode
 
 on:
   push:
-    branches: 
-      - main
-  pull_request:
     branches:
       - main
-
+      - dev
 
 jobs:
   build:
@@ -20,13 +17,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22" # Consider downgrading from 22 if compatibility issues arise
+          node-version: "22"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
-
 
       - name: Install dependencies
         working-directory: ./headapps/nextjs-starter
@@ -35,7 +31,6 @@ jobs:
       - name: Build project
         working-directory: ./headapps/nextjs-starter
         run: pnpm run build
-
 
   pipeline_scan:
     needs: build
@@ -46,6 +41,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Package source code for Veracode
         run: |
           mkdir veracode-package
@@ -53,14 +54,13 @@ jobs:
           zip -r veracode-package.zip veracode-package
 
       - name: Upload to Veracode
-        uses: veracode/veracode-uploadandscan-action@0.2.10
+        uses: veracode/veracode-uploadandscan-action@v0.2.10
         with:
-          appname: '${{ github.repository }}'
+          appname: 'YourAppName'
           createprofile: true
           filepath: 'veracode-package.zip'
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
-
 
   process-results:
     needs: pipeline_scan
@@ -75,11 +75,10 @@ jobs:
         run: |
           mkdir veracode-results
           curl -s -u "${{ secrets.VERACODE_API_ID }}:${{ secrets.VERACODE_API_KEY }}" \
-            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=${{ github.repository }}&format=sarif" \
+            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=YourAppName&format=sarif" \
             -o veracode-results/veracode-results.sarif
 
       - name: Upload SARIF to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: veracode-results/veracode-results.sarif
-
