@@ -61,4 +61,25 @@ jobs:
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
 
- 
+
+  process-results:
+    needs: pipeline_scan
+    runs-on: ubuntu-latest
+    name: Convert Pipeline Scan Output to SARIF
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download scan results
+        run: |
+          mkdir veracode-results
+          curl -s -u "${{ secrets.VERACODE_API_ID }}:${{ secrets.VERACODE_API_KEY }}" \
+            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=YourAppName&format=sarif" \
+            -o veracode-results/veracode-results.sarif
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: veracode-results/veracode-results.sarif
+
