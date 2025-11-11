@@ -56,6 +56,18 @@ jobs:
         with:
          name: veracode-package
          path: veracode-package.zip
+
+
+      - name: Run Veracode Static Scan
+        uses: veracode/veracode-uploadandscan-action@v1.0.6
+        with:
+          appname: 'Tojen'
+          createprofile: true
+          version: '${{ github.run_id }}'
+          filepath: 'veracode-package.zip'
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }
+
         
 
 
