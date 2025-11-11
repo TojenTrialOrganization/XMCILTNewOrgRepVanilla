@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - dev
+  repository_dispatch:
+    types: [veracode-build]   
 
 jobs:
   build:
