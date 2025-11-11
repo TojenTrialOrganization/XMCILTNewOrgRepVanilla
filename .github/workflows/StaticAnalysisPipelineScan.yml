@@ -65,7 +65,7 @@ jobs:
           createprofile: true
           filepath: 'veracode-package.zip'
           vid: '${{ secrets.VERACODE_API_ID }}'
-          vkey: '${{ secrets.VERACODE_API_KEY }'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
 
         
 
