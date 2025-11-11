@@ -75,11 +75,11 @@ jobs:
         run: |
           mkdir veracode-results
           curl -s -u "${{ secrets.VERACODE_API_ID }}:${{ secrets.VERACODE_API_KEY }}" \
-            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=YourAppName&format=sarif" \
+            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=${{ github.repository }}&format=sarif" \
             -o veracode-results/veracode-results.sarif
 
       - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: veracode-results/veracode-results.sarif
 
