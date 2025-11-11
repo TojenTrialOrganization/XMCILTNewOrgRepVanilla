@@ -54,7 +54,7 @@ jobs:
           zip -r veracode-package.zip veracode-package
 
       - name: Upload to Veracode
-        uses: veracode/veracode-uploadandscan-action@v0.2.10
+        uses: veracode/veracode-uploadandscan-action@0.2.10
         with:
           appname: 'YourAppName'
           createprofile: true
