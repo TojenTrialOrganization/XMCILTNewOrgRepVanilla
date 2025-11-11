@@ -47,4 +47,12 @@ jobs:
           cp -r headapps/nextjs-starter/* veracode-package/
           zip -r veracode-package.zip veracode-package
 
+  
+      - name: Upload Veracode Package as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+         name: veracode-package
+         path: veracode-package.zip
+        
+
 
