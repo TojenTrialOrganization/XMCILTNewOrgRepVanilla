@@ -53,32 +53,11 @@ jobs:
           cp -r headapps/nextjs-starter/* veracode-package/
           zip -r veracode-package.zip veracode-package
 
-      - name: Upload to Veracode
-        uses: veracode/veracode-uploadandscan-action@0.2.10
+       # run the pipeline scan action
+      - name: pipeline-scan action step
+        id: pipeline-scan
+        uses: veracode/Veracode-pipeline-scan-action@v1.0.12
         with:
-          appname: 'YourAppName'
-          createprofile: true
-          filepath: 'veracode-package.zip'
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
-
-  process-results:
-    needs: pipeline_scan
-    runs-on: ubuntu-latest
-    name: Convert Pipeline Scan Output to SARIF
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download scan results
-        run: |
-          mkdir veracode-results
-          curl -s -u "${{ secrets.VERACODE_API_ID }}:${{ secrets.VERACODE_API_KEY }}" \
-            "https://analysiscenter.veracode.com/api/5.0/getflaws.do?appname=YourAppName&format=sarif" \
-            -o veracode-results/veracode-results.sarif
-
-      - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: veracode-results/veracode-results.sarif
+          file: "veracode-package.zip" 
