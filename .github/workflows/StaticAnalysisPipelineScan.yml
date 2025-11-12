@@ -84,7 +84,7 @@ jobs:
     # Path to SARIF file relative to the root of the repository
         sarif_file: veracode-results.sarif
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: SarifResults
         path: veracode-results.sarif
