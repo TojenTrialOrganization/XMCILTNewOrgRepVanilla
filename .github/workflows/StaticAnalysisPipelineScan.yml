@@ -5,8 +5,10 @@ on:
     branches:
       - main
       - dev
-  repository_dispatch:
-    types: [veracode-build]   
+
+permissions:
+  contents: read
+  security-events: write  
 
 jobs:
   build:
@@ -72,22 +74,30 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ScanResults
-
-    - name: convert
+        path: .
+        
+    - name: Convert Veracode JSON to SARIF
       uses: veracode/veracode-pipeline-scan-results-to-sarif@master
       with:
         pipeline-results-json: results.json
         output-results-sarif: veracode-results.sarif
-        finding-rule-level: "4:3:0"
-    - uses: github/codeql-action/upload-sarif@v2
+        scan-type: pipeline
+        githubToken: ${{ secrets.GITHUB_TOKEN }} # uses token with correct permission
+        
+
+    - name: Upload SARIF to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
       with:
-    # Path to SARIF file relative to the root of the repository
         sarif_file: veracode-results.sarif
 
-    - uses: actions/upload-artifact@v4
+
+
+    - name: Upload SARIF Artifact
+      uses: actions/upload-artifact@v4
       with:
         name: SarifResults
         path: veracode-results.sarif
+
 
         
 
