@@ -50,22 +50,18 @@ jobs:
           cp -r headapps/nextjs-starter/* veracode-package/
           zip -r veracode-package.zip veracode-package
 
-  
-      - name: Upload Veracode Package as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-         name: veracode-package
-         path: veracode-package.zip
+          #  Submit  project to pipeline scan
+      - name: Pipeline Scan
+        run: |
+           java -jar /opt/veracode/pipeline-scan.jar --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file="veracode-package.zip" --app_id="${{secrets.VERACODE_APP_ID}}" --json_output_file="results.json"
+           continue-on-error: true
 
-
-      - name: Run Veracode Static Scan
-        uses: veracode/veracode-uploadandscan-action@0.2.10
+      - uses: actions/upload-artifact@v4
         with:
-          appname: 'Tojen'
-          createprofile: true
-          filepath: 'veracode-package.zip'
-          vid: '${{ secrets.VERACODE_API_ID }}'
-          vkey: '${{ secrets.VERACODE_API_KEY }}'
+          name: ScanResults
+          path: results.json
+        
+
 
         
 
