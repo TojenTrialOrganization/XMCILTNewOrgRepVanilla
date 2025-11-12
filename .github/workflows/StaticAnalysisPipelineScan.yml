@@ -51,12 +51,16 @@ jobs:
           zip -r veracode-package.zip veracode-package
 
           #  Submit  project to pipeline scan
+      
+      - name: Download Veracode Pipeline Scan
+        run: |
+         curl -sSLO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+         unzip pipeline-scan-LATEST.zip
+
       - name: Pipeline Scan
         run: |
-           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-           unzip -o pipeline-scan-LATEST.zip
            java -jar pipeline-scan.jar --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --file="veracode-package.zip" --app_id="${{secrets.VERACODE_APP_ID}}" --json_output_file="results.json"
-           continue-on-error: true
+        continue-on-error: true
 
       - uses: actions/upload-artifact@v4
         with:
