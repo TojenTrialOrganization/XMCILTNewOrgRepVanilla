@@ -140,3 +140,4 @@ jobs:
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           createprofile: true
           failbuild: true
+          maxretrycount: 10
