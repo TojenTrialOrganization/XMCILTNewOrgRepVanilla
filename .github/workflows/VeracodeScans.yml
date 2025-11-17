@@ -118,6 +118,7 @@ jobs:
           createsandbox: true
           createprofile: true
           failbuild: false
+          maxretrycount: 10
           
   #createprofile: true -> this needs to changed to false
   policy_scan:
