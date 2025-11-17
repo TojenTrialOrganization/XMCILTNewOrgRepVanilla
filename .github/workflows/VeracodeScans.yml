@@ -94,7 +94,8 @@ jobs:
         with:
           name: pipeline-results
           path: results.json
-
+          
+  #createprofile: true -> this needs to changed to false
   sandbox_scan:
     needs: build
     runs-on: ubuntu-latest
@@ -115,9 +116,10 @@ jobs:
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           sandboxname: 'GitHubActions'
           createsandbox: true
-          createprofile: false
+          createprofile: true
           failbuild: false
-
+          
+  #createprofile: true -> this needs to changed to false
   policy_scan:
     needs: build
     runs-on: ubuntu-latest
@@ -136,5 +138,5 @@ jobs:
           filepath: 'veracode-package.zip'
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
-          createprofile: false
+          createprofile: true
           failbuild: true
