@@ -116,11 +116,12 @@ jobs:
           filepath: 'veracode-package.zip'
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
-          sandboxname: 'GitHubActions'
+          sandboxname: 'GitHubActions-${{ github.ref_name }}'
           createsandbox: true
           createprofile: true
           failbuild: false
           maxretrycount: 10
+          scanpollinginterval: 120
           
   #createprofile: true -> this needs to changed to false
   policy_scan:
@@ -145,3 +146,4 @@ jobs:
           createprofile: true
           failbuild: true
           maxretrycount: 10
+          scanpollinginterval: 120
