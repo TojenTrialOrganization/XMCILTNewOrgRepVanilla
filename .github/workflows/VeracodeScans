@@ -1,14 +1,12 @@
 
 name: Combined Veracode Scans
 
+
 on:
   push:
-    branches:
-      - '**'
   pull_request:
-    branches:
-      - '**'
   workflow_dispatch:
+
 
 permissions:
   contents: read
