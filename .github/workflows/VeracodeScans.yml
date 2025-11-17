@@ -39,9 +39,15 @@ jobs:
 
       - name: Package source code for Veracode
         run: |
-          mkdir veracode-package
-          cp -r headapps/nextjs-starter/* veracode-package/
-          zip -r veracode-package.zip veracode-package
+         mkdir veracode-package
+         rsync -av --progress headapps/nextjs-starter/ veracode-package \
+          --exclude node_modules \
+          --exclude .next \
+          --exclude .git \
+          --exclude .vercel \
+          --exclude coverage \
+          --exclude '*.log'
+         zip -r veracode-package.zip veracode-package
 
       - name: Upload packaged artifact
         uses: actions/upload-artifact@v4
