@@ -120,7 +120,6 @@ jobs:
           sandboxname: 'GitHubActions-${{ github.ref_name }}'
           createsandbox: true
           createprofile: true
-          failbuild: false
           maxretrycount: 10
           scanpollinginterval: 120
           
@@ -145,6 +144,5 @@ jobs:
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           createprofile: true
-          failbuild: true
           maxretrycount: 10
           scanpollinginterval: 120
