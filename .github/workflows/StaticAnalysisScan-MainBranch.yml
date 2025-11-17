@@ -1,18 +1,22 @@
 
-name: Static Analysis Scan
+name: Combined Veracode Scans
 
 on:
   push:
+    branches:
+      - '**'
   pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  security-events: write  
+  security-events: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,18 +35,9 @@ jobs:
         working-directory: ./headapps/nextjs-starter
         run: pnpm install
 
-      - name: Build project
+      - name: Build Next.js project
         working-directory: ./headapps/nextjs-starter
         run: pnpm run build
-
-  pipeline_scan:
-    needs: build
-    runs-on: ubuntu-latest
-    name: Pipeline Scan
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Package source code for Veracode
         run: |
@@ -50,8 +45,23 @@ jobs:
           cp -r headapps/nextjs-starter/* veracode-package/
           zip -r veracode-package.zip veracode-package
 
-      # ✅ Fail on default branch
-      - name: Pipeline Scan (Fail on Default Branch)
+      - name: Upload packaged artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: veracode-package
+          path: veracode-package.zip
+
+  pipeline_scan:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download packaged artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: veracode-package
+          path: .
+
+      - name: Pipeline Scan (Fail on Default/main Branch)
         if: github.ref_name == github.event.repository.default_branch || github.base_ref == github.event.repository.default_branch
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
@@ -64,7 +74,6 @@ jobs:
             --app_id="${{ secrets.VERACODE_APP_ID }}" \
             --json_output_file="results.json"
 
-      # ✅ Non-blocking scan for other branches
       - name: Pipeline Scan (Other Branches)
         if: github.ref_name != github.event.repository.default_branch && github.base_ref != github.event.repository.default_branch
         run: |
@@ -79,34 +88,49 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ScanResults
+          name: pipeline-results
           path: results.json
 
-  process-results:
-    needs: pipeline_scan
+  sandbox_scan:
+    needs: build
     runs-on: ubuntu-latest
+    if: github.ref_name != github.event.repository.default_branch && github.base_ref != github.event.repository.default_branch
     steps:
-      - name: Retrieve results
+      - name: Download packaged artifact
         uses: actions/download-artifact@v4
         with:
-          name: ScanResults
+          name: veracode-package
           path: .
 
-      - name: Convert Veracode JSON to SARIF
-        uses: veracode/veracode-pipeline-scan-results-to-sarif@master
+      - name: Sandbox Scan (Non-blocking on all branches except default/main)
+        uses: veracode/veracode-uploadandscan-action@v1
         with:
-          pipeline-results-json: results.json
-          output-results-sarif: veracode-results.sarif
-          scan-type: pipeline
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          appname: '${{ secrets.VERACODE_APP_NAME }}'
+          filepath: 'veracode-package.zip'
+          vid: '${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
+          sandboxname: 'GitHubActions'
+          createsandbox: true
+          createprofile: false
+          failbuild: false
 
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
+  policy_scan:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_name == github.event.repository.default_branch || github.base_ref == github.event.repository.default_branch
+    steps:
+      - name: Download packaged artifact
+        uses: actions/download-artifact@v4
         with:
-          sarif_file: veracode-results.sarif
+          name: veracode-package
+          path: .
 
-      - name: Upload SARIF Artifact
-        uses: actions/upload-artifact@v4
+      - name: Policy Scan (Blocking on default/main branch)
+        uses: veracode/veracode-uploadandscan-action@v1
         with:
-          name: SarifResults
-          path: veracode-results.sarif
+          appname: '${{ secrets.VERACODE_APP_NAME }}'
+          filepath: 'veracode-package.zip'
+          vid: '${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
+          createprofile: false
+          failbuild: true
