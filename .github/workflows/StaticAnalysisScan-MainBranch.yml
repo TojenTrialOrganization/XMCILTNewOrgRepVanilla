@@ -103,7 +103,7 @@ jobs:
           path: .
 
       - name: Sandbox Scan (Non-blocking on all branches except default/main)
-        uses: veracode/veracode-uploadandscan-action@v1
+        uses: veracode/veracode-uploadandscan-action@0.2.11
         with:
           appname: '${{ secrets.VERACODE_APP_NAME }}'
           filepath: 'veracode-package.zip'
@@ -126,7 +126,7 @@ jobs:
           path: .
 
       - name: Policy Scan (Blocking on default/main branch)
-        uses: veracode/veracode-uploadandscan-action@v1
+        uses: veracode/veracode-uploadandscan-action@0.2.11
         with:
           appname: '${{ secrets.VERACODE_APP_NAME }}'
           filepath: 'veracode-package.zip'
