@@ -1,8 +1,5 @@
 # XMCILTNewOrgRepVanilla
 XMCILTNewOrgRepVanilla
-
-#10-Nov v02, V03 direct commit1122
-
-#17-Nov-Commit1
+F2611-2
 
 # update F2 Readme file
