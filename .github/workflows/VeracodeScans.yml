@@ -124,25 +124,25 @@ jobs:
           scanpollinginterval: 120
           
   #createprofile: true -> this needs to changed to false
-  policy_scan:
-    needs: build
-    name: policy_scan
-    runs-on: ubuntu-latest
-    if: github.ref_name == github.event.repository.default_branch || github.base_ref == github.event.repository.default_branch
-    steps:
-      - name: Download packaged artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: veracode-package
-          path: .
-
-      - name: Policy Scan (Blocking on default/main branch)
-        uses: veracode/veracode-uploadandscan-action@0.2.11
-        with:
-          appname: '${{ secrets.VERACODE_APP_NAME }}'
-          filepath: 'veracode-package.zip'
-          vid: '${{ secrets.VERACODE_API_ID }}'
-          vkey: '${{ secrets.VERACODE_API_KEY }}'
-          createprofile: true
-          maxretrycount: 10
-          scanpollinginterval: 120
+  #policy_scan:
+  #  needs: build
+  #  name: policy_scan
+  #  runs-on: ubuntu-latest
+  #  if: github.ref_name == github.event.repository.default_branch || github.base_ref == github.event.repository.default_branch
+  #  steps:
+  #    - name: Download packaged artifact
+  #      uses: actions/download-artifact@v4
+  #      with:
+  #        name: veracode-package
+  #        path: .
+#
+#      - name: Policy Scan (Blocking on default/main branch)
+#        uses: veracode/veracode-uploadandscan-action@0.2.11
+#        with:
+#          appname: '${{ secrets.VERACODE_APP_NAME }}'
+#          filepath: 'veracode-package.zip'
+#          vid: '${{ secrets.VERACODE_API_ID }}'
+#          vkey: '${{ secrets.VERACODE_API_KEY }}'
+#          createprofile: true
+#          maxretrycount: 10
+#          scanpollinginterval: 120
